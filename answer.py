@@ -1,30 +1,19 @@
 """Coursework for 408H - Privacy Enhancing Techniques"""
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from Crypto.Cipher import AES
 import numpy as np
 import math
 import numpy.random as ran
-
-def AddPadding(data):
-    """
-    Add padding to the input to make it
-    16 bytes long for using with AES
-    """
-    data = str(data)
-    length = 16 - (len(data) % 16)
-    data += chr(length)*length
-    return data
+import cryption
+from Crypto.Cipher import AES
 
 
-def RemovePadding(data):
-    """
-    Removes the previously added padding: the
-    last char contains the added length
-    """
-    len = ord(data[-1])
-    data = data[:-len]
-    return data
+
+PADDING = '{'
+BLOCK_SIZE = 16
+pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+unpad = lambda s: s.split(PADDING)[0]
+
 
 
 def Encrypt(k1, k2, k, x):
@@ -39,10 +28,10 @@ def Encrypt(k1, k2, k, x):
     """
     # print "xxx", k1, k2, k, x, "xxx"
     message = str(int(x) + (k << 1))
-    message = AddPadding(message)
+    message = pad(str(message))
 
-    key1 = AddPadding(k1)
-    key2 = AddPadding(k2)
+    key1 = pad(str(k1))
+    key2 = pad(str(k2))
 
     obj = AES.new(key1, AES.MODE_CBC, key2)
 
@@ -54,13 +43,14 @@ def Decrypt2(k1, k2, ciphertext):
     A Decrypt function, decrypting x and k
     using the given keys k1 and k2.
     """
-    key1 = AddPadding(k1)
-    key2 = AddPadding(k2)
+    # print "xxx2 xx", k1, k2, ciphertext, "xxx"
+    key1 = pad(str(k1))
+    key2 = pad(str(k2))
 
     obj = AES.new(key1, AES.MODE_CBC, key2)
 
     message = obj.decrypt(ciphertext)
-    message = RemovePadding(message)
+    message = unpad(str(message))
     message = int(message)
 
     k = message >> 1
@@ -87,11 +77,26 @@ def Xor(a, b):
     return bool(a) != bool(b)
 
 def Encry(kX, kY, kZ, t):
+    # message = str(int(t) + (kZ << 1))
+    # cipher = AES.new(cryption.pad(str(kX)), AES.MODE_CBC, cryption.pad(str(kY)))
+    # encoded = cryption.EncodeAES(cipher, message)
+    # return encoded
+    # print False
+    #xxx 125 196 250 0 xxx
     return Encrypt(int(kX), int(kY), int(kZ), t)
 
-def Decrypt(kX, kY, t):
-    # print "xxx", kX, kY, t, "xxx"
-    return Decrypt2(int(kX), int(kY), t)
+def Decrypt(kX, kY, text):
+
+    # cipher = AES.new(cryption.pad(str(kX)), AES.MODE_CBC,cryption.pad(str(kY)))
+    # decoded = cryption.DecodeAES(cipher, text)
+    # decoded = RemovePadding(decoded)
+    # decoded = int(decoded)
+    # k = decoded >> 1
+    # x = decoded & 1
+    # return k, x
+    # # print "xxx", kX, kY, t, "xxx"
+    # xxx2 xx 13 146 luanma xxx
+    return Decrypt2(int(kX), int(kY), text)
 
 def PrintBit(B):
     if bool(B):
@@ -219,6 +224,11 @@ def main(circuit):
     # print "Truth-Table for function '%s':\n" % (FuncName)
     # print "   AB | CD || EF"
     # print "  ----|----||----"
+    # p = pad("vjwoiowsivjwsadaa")
+    # print p
+    # x = unpad(p)
+    # print x
+    # return
     for A in [False, True]:
         for B in [False, True]:
             AliceInput = (A, B)
