@@ -1,13 +1,10 @@
 """Coursework for 408H - Privacy Enhancing Techniques"""
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python
+from Crypto.Cipher import AES
 import numpy as np
 import math
 import numpy.random as ran
-
-
-
-from Crypto.Cipher import AES
-
 
 def AddPadding(data):
     """
@@ -271,7 +268,7 @@ def main(circuit):
     return 0
 
 if __name__ == "__main__":
-    O1 = [Or, [Or, [And, [Nand, 0, 1], 3], [And, [Nand, 0, 0], 2]], [And, [And, 2, [Nand, 1, 1]], 3]]
+    O1 = [Or, [Or, [And, [Nor, 0, 1], 3], [And, [Nand, 0, 0], 2]], [And, [And, 2, [Nand, 1, 1]], 3]]
     O2 = [Or, [Xor, 0, 2], [Xor, 1, 3]]
     circuit = [O1, O2]
     main(circuit)
