@@ -43,15 +43,15 @@ def decrypt(key, enc):
     return unpad(cipher.decrypt(enc[BS:]))
 
 def Encry(kX, kY, kZ, t):
-    message = pad(str(int(t) + (kZ << 1)))
+    message = pad(str(kZ*2+int(t)))
     key = pad(str(kX+kY))
     return encrypt(key, message)
 
 def Decrypt(kX, kY, text):
     key = pad(str(kX+kY))
     message = int(decrypt(key, text))
-    t, kZ = message >> 1, message & 1
-    return t, kZ
+    kZ, t = message/2, message % 2
+    return kZ, t
 
 def PrintBit(B):
     if bool(B):
